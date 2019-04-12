@@ -26,6 +26,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "HealthComponent")
 	float Health;	
 
+	UFUNCTION()
+	void OnRep_Health(float OldHealth);
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HealthComponent")
 	float DefaultHealth;
 
