@@ -96,7 +96,7 @@ FVector ASTrackerBot::GetNextPathPoint()
 	UNavigationPath* NavPath = UNavigationSystemV1::FindPathToActorSynchronously(this, GetActorLocation(), GetWorld()->GetFirstPlayerController()->GetPawn());
 
 
-	if (NavPath->PathPoints.Num() > 1)
+	if (NavPath && NavPath->PathPoints.Num() > 1)
 	{
 
 		//Return next point in the path
@@ -125,6 +125,9 @@ void ASTrackerBot::SelfDestruct()
 
 	UGameplayStatics::PlaySoundAtLocation(this, ExplodeSound, GetActorLocation());
 
+	MeshComp->SetVisibility(false, true);
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	if (Role == ROLE_Authority)
 	{
 		TArray<AActor*> IgnoreActors;
@@ -135,11 +138,10 @@ void ASTrackerBot::SelfDestruct()
 
 		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
 
+		//Delete Actor Immediatlly
+		//Destroy();
 
-
-
-		//Delete Actor emdiatlly
-		Destroy();
+		SetLifeSpan(2.0f);
 	}
 
 }
@@ -154,7 +156,7 @@ void ASTrackerBot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (Role == ROLE_Authority)
+	if (Role == ROLE_Authority && !bExploded)
 	{
 
 		float DistanceToTarget = (GetActorLocation() - NextPathPoint).Size();
@@ -185,7 +187,9 @@ void ASTrackerBot::Tick(float DeltaTime)
 
 void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	if (!bStartedSelfDestuction)
+	Super::NotifyActorBeginOverlap(OtherActor);
+
+	if (!bStartedSelfDestuction && !bExploded)
 	{
 		ASCharacter* PlayerPawn = Cast<ASCharacter>(OtherActor);
 		if (PlayerPawn)
