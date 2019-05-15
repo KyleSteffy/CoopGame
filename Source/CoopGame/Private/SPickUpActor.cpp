@@ -42,7 +42,7 @@ void ASPickUpActor::Respawn()
 {
 	if (PowerUpClass == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PowerUpClass is nullptr in %s. Please Update Your Blueprint"), *GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("PowerUpClass is nullptr in %s. Please Update Your Blueprint"), *GetName());
 		return;
 	}
 
